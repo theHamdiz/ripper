@@ -9,6 +9,7 @@ __version__ = "0.1"
 __email__ = "ahmad.hamdi.emara@gmail.com"
 __status__ = "Beta"
 
+__commonExtension__ = ".gif"
 
 from urllib.request import urlopen, urlretrieve
 import os, sys, re
@@ -58,10 +59,12 @@ def download_images(images, path):
     print(im)
     im_big = im.replace("250", "1280")
     im_big = im_big.replace("500", "1280")
-    filename = re.findall("([^/]*).(?:jpg|gif|png)",im)[0]
+    filename = re.findall("([^/]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large)",im)[0]
     filename = os.path.join(path,filename)
-    filename_big = re.findall("([^/]*).(?:jpg|gif|png)",im_big)[0]
+    filename_big = re.findall("([^/]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large)",im_big)[0]
     filename_big = os.path.join(path,filename_big)
+    filename_big = filename_big + __commonExtension__
+
     try:
       urlretrieve(im_big, filename_big)
     except:
