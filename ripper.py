@@ -9,17 +9,25 @@ __version__ = "0.1"
 __email__ = "ahmad.hamdi.emara@gmail.com"
 __status__ = "Beta"
 
-__commonExtension__ = ".gif"
+class RColors:
+    HEADER = '\033[95m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 from urllib.request import urlopen, urlretrieve
-import os, sys, re
 
+import os, sys, re
 
 def check_url(url):
   #Test if url is ok
   url_parsed = re.findall(".tumblr.com", url)
   if len(url_parsed) < 1:
-    #print("Malformed url")
+    print(str(RColors.FAIL) + "Malformed url")
     return ""
   else:
     return url_parsed[0]
@@ -39,8 +47,8 @@ def get_images_page(html_code):
       if word not in im:
         images_http.append(im[5:-1])
 
-  print("Number of images:", len(images_http))
-  #print("---")
+  print(str(RColors.BLUE) +"Number of images: " + str(RColors.BOLD) + str(len(images_http)))
+  print(str(RColors.GREEN) +"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
   #for im in images_http:
   #  print(im)
   return images_http
@@ -56,14 +64,20 @@ def check_end(html1, html2, num):
 
 def download_images(images, path):
   for im in images:
-    print(im)
+    print(str(RColors.BLUE) + im)
+    
+    extension = os.path.splitext(im)[1]
+    
     im_big = im.replace("250", "1280")
     im_big = im_big.replace("500", "1280")
+
     filename = re.findall("([^/]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large)",im)[0]
     filename = os.path.join(path,filename)
+    filename = filename + extension
+
     filename_big = re.findall("([^/]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large)",im_big)[0]
     filename_big = os.path.join(path,filename_big)
-    filename_big = filename_big + __commonExtension__
+    filename_big = filename_big + extension
 
     try:
       urlretrieve(im_big, filename_big)
@@ -71,7 +85,7 @@ def download_images(images, path):
       try:
         urlretrieve(im, filename)
       except:
-        print("Failed to download "+im)
+        print(str(RColors.WARNING) + "Failed to download " + im)
 
 def main():
 
@@ -88,7 +102,7 @@ def main():
     pagenum = 1
 
   if (check_url(url) == ""):
-    print("Error: Malformed url")
+    print(str(RColors.FAIL) + "Error: Malformed url")
     sys.exit(1)
 
   if (url[-1] != "/"):
@@ -105,8 +119,8 @@ def main():
   html_code_old = ""
   while(True):
     #fetch html from url
-    print("\nFetching images from page "+str(pagenum)+"\n")
-    f = urlopen(url+"page/"+str(pagenum))
+    print(str(RColors.HEADER) + "\nFetching images from page " + str(RColors.BOLD) + str(pagenum) + "\n")
+    f = urlopen(url + "page/" + str(pagenum))
     html_code = f.read()
     html_code = str(html_code)
     if(check_end(html_code, html_code_old, pagenum)):
