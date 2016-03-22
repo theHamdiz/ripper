@@ -5,7 +5,7 @@ This program will download all the images from a Tumblr blog """
 
 __author__ = "a7madx7"
 __license__ = "BSD"
-__version__ = "0.1"
+__version__ = "0.3"
 __email__ = "ahmad.hamdi.emara@gmail.com"
 __status__ = "Beta"
 
@@ -34,7 +34,7 @@ def check_url(url):
 
 def get_images_page(html_code):
 
-  images =re.findall("src=\"(?:.[^\"]*)_(?:[0-9]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large)\"", html_code)
+  images =re.findall("src=\"(?:.[^\"]*)_(?:[0-9]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large|mp4|wmv|flv|webm|mpeg|mkv|avi)\"", html_code)
 
   forbidden = ["avatar"]
 
@@ -48,7 +48,7 @@ def get_images_page(html_code):
         images_http.append(im[5:-1])
 
   print(str(RColors.BLUE) +"Number of images: " + str(RColors.BOLD) + str(len(images_http)))
-  print(str(RColors.GREEN) +"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
+  print(str(RColors.GREEN) + ("=-" * 20 ) + '+')
   #for im in images_http:
   #  print(im)
   return images_http
@@ -65,17 +65,17 @@ def check_end(html1, html2, num):
 def download_images(images, path):
   for im in images:
     print(str(RColors.BLUE) + im)
-    
+
     extension = os.path.splitext(im)[1]
-    
+
     im_big = im.replace("250", "1280")
     im_big = im_big.replace("500", "1280")
 
-    filename = re.findall("([^/]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large)",im)[0]
+    filename = re.findall("([^/]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large|mkv|mp4|wmv|webm|flv|avi|mpeg)",im)[0]
     filename = os.path.join(path,filename)
     filename = filename + extension
 
-    filename_big = re.findall("([^/]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large)",im_big)[0]
+    filename_big = re.findall("([^/]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large|mkv|mp4|wmv|webm|flv|avi|mpeg)",im_big)[0]
     filename_big = os.path.join(path,filename_big)
     filename_big = filename_big + extension
 
