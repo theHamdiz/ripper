@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 """ Tumbrl downloader
-This program will download all the images from a Tumblr blog """
+This program will download
+all the images from a Tumblr blog """
 
 __author__ = "a7madx7"
 __license__ = "BSD"
@@ -24,17 +25,24 @@ from urllib.request import urlopen, urlretrieve
 import os, sys, re
 
 def check_url(url):
-  #Test if url is ok
+  # Test if url is ok
   url_parsed = re.findall(".tumblr.com", url)
   if len(url_parsed) < 1:
-    print(str(RColors.FAIL) + "Malformed url")
-    return ""
+    # if not a full tumblr url, we should check if its not tumblr
+    url_parsed = re.findall(".com", url)
+    # if it contains another domain and not tumblr.com then its another website
+    if len(url_parsed) > 0:
+      return ""
+    else:
+      print(str(RColors.BLUE) + "Tumblr blog name only detected")
+      print(str(RColors.GREEN))
+      return "https://" + url + ".tumblr.com/"
   else:
-    return url_parsed[0]
+    return url
 
 def get_images_page(html_code):
 
-  images =re.findall("src=\"(?:.[^\"]*)_(?:[0-9]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large|mp4|wmv|flv|webm|mpeg|mkv|avi)\"", html_code)
+  images =re.findall("src=\"(?:.[^\"]*)_(?:[0-9]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large|mp4|wmv|flv|webm|mpeg|mkv|avi|bmp|tiff|raw|jbig|svg|bpg|webp|exif|jiff|heif)\"", html_code)
 
   forbidden = ["avatar"]
 
@@ -71,11 +79,11 @@ def download_images(images, path):
     im_big = im.replace("250", "1280")
     im_big = im_big.replace("500", "1280")
 
-    filename = re.findall("([^/]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large|mkv|mp4|wmv|webm|flv|avi|mpeg)",im)[0]
+    filename = re.findall("([^/]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large|mp4|wmv|flv|webm|mpeg|mkv|avi|bmp|tiff|raw|jbig|svg|bpg|webp|exif|jiff|heif)",im)[0]
     filename = os.path.join(path,filename)
     filename = filename + extension
 
-    filename_big = re.findall("([^/]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large|mkv|mp4|wmv|webm|flv|avi|mpeg)",im_big)[0]
+    filename_big = re.findall("([^/]*).(?:jpg|png|gif|jpeg|jpg-large|jpeg-large|mp4|wmv|flv|webm|mpeg|mkv|avi|bmp|tiff|raw|jbig|svg|bpg|webp|exif|jiff|heif)",im_big)[0]
     filename_big = os.path.join(path,filename_big)
     filename_big = filename_big + extension
 
@@ -89,26 +97,28 @@ def download_images(images, path):
 
 def main():
 
-  #Check input arguments
+  # Check input arguments
   if len(sys.argv) < 2:
-    print("usage: ./tumblr_rip.py url [starting page]")
+    print("usage: ./tumblr.py url[starting page]")
     sys.exit(1)
 
   url = sys.argv[1]
-
   if len(sys.argv) == 3:
     pagenum = int(sys.argv[2])
   else:
     pagenum = 1
 
-  if (check_url(url) == ""):
+  url = check_url(url)  
+  print(url)
+  if (url == ""):
     print(str(RColors.FAIL) + "Error: Malformed url")
+    print(str(RColors.GREEN))
     sys.exit(1)
 
   if (url[-1] != "/"):
     url += "/"
 
-  blog_name = url.replace("http://", "")
+  blog_name = url.replace("https://", "")
   blog_name = re.findall("(?:.[^\.]*)", blog_name)[0]
   current_path = os.getcwd()
   path = os.path.join(current_path, blog_name)
